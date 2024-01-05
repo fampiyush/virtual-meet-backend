@@ -21,13 +21,14 @@ io.on('connection', (socket) => {
     socket.on('user-model', (data) => {
       // console.log(data);
       users[socket.id] = data;
-      socket.broadcast.emit('user-model',{id: socket.id, position: data});
+      socket.broadcast.emit('user-model',{id: socket.id, data: data});
     });
 
-    socket.emit('get-all-users', Object.values(users));
+    socket.emit('get-all-users', users);
     socket.on('disconnect', () => {
       console.log('a user disconnected with id:', socket.id);
       delete users[socket.id];
+      socket.broadcast.emit('user-model', `User Disconnected, ${socket.id}`)
     });
 });
 
