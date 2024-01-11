@@ -19,12 +19,16 @@ const users = {};
 io.on('connection', (socket) => {
     console.log('a user connected with id:', socket.id);
     socket.on('user-model', (data) => {
-      // console.log(data);
       users[socket.id] = data;
       socket.broadcast.emit('user-model',{id: socket.id, data: data});
     });
 
-    socket.emit('get-all-users', users);
+    socket.on('get-all-users', () => {
+      const allUsers = { ...users }
+      delete allUsers[socket.id];
+      socket.emit('all-users', allUsers);
+    });
+    
     socket.on('disconnect', () => {
       console.log('a user disconnected with id:', socket.id);
       delete users[socket.id];
