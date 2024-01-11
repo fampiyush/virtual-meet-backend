@@ -31,8 +31,11 @@ io.on('connection', (socket) => {
     
     socket.on('disconnect', () => {
       console.log('a user disconnected with id:', socket.id);
-      delete users[socket.id];
-      socket.broadcast.emit('user-disconnected', socket.id)
+      const data = users[socket.id];
+      if (data) {
+        socket.broadcast.emit('user-disconnected', {socketId: socket.id, peerId: data['peerId']});
+        delete users[socket.id];
+      }
     });
 });
 
