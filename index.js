@@ -59,6 +59,7 @@ io.on('connection', (socket) => {
           delete allUsers[key]
         }
       })
+      console.log(allUsers)
       socket.emit('all-users', allUsers);
     });
     
