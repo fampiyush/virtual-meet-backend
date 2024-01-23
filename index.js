@@ -59,12 +59,12 @@ io.on('connection', (socket) => {
     
     socket.on('disconnect', () => {
       console.log('a user disconnected with id:', socket.id);
-      const data = users[currRoom][socket.id];
-      if (data) {
+      if (currRoom && users[currRoom] && users[currRoom][socket.id]) {
+        const data = users[currRoom][socket.id];
         socket.broadcast.to(currRoom).emit('user-disconnected', {socketId: socket.id, peerId: data['peerId']});
         delete users[currRoom][socket.id]
       }
-      if (Object.keys(users[currRoom]).length === 0) {
+      if (currRoom && users[currRoom] && Object.keys(users[currRoom]).length === 0) {
         delete users[currRoom]
       }
     });
