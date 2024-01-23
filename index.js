@@ -45,29 +45,27 @@ io.on('connection', (socket) => {
     })
    
     socket.on('user-model', (data) => {
-      currRoom = [...socket.rooms];
-      users[socket.id] = data;
-      socket.broadcast.to(currRoom[1]).emit('user-model', { id: socket.id, data: data });
+      currRoom = [...socket.rooms][1];
+      users[currRoom] = {...users[currRoom], [socket.id]: data};
+      socket.broadcast.to(currRoom).emit('user-model', { id: socket.id, data: data });
     });
     
     socket.on('get-all-users', () => {
-      currRoom = [...socket.rooms]
-      const allUsers = { ...users }
-      delete allUsers[socket.id];
-      Object.keys(allUsers).forEach(key => {
-        if (allUsers[key]['room'] !== currRoom[1]) {
-          delete allUsers[key]
-        }
-      })
+      currRoom = [...socket.rooms][1]
+      const allUsers = { ...users[currRoom] }
+      delete allUsers[socket.id]
       socket.emit('all-users', allUsers);
     });
     
     socket.on('disconnect', () => {
       console.log('a user disconnected with id:', socket.id);
-      const data = users[socket.id];
+      const data = users[currRoom][socket.id];
       if (data) {
-        socket.broadcast.to(currRoom[1]).emit('user-disconnected', {socketId: socket.id, peerId: data['peerId']});
-        delete users[socket.id];
+        socket.broadcast.to(currRoom).emit('user-disconnected', {socketId: socket.id, peerId: data['peerId']});
+        delete users[currRoom][socket.id]
+      }
+      if (Object.keys(users[currRoom]).length === 0) {
+        delete users[currRoom]
       }
     });
 });
