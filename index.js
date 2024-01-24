@@ -31,7 +31,6 @@ io.on('connection', (socket) => {
           console.log(socket.id, 'joined room:', room)
         }else {
           socket.emit('joined-room', false)
-          socket.disconnect()
         }
       }else{
         let roomId = generateId()
