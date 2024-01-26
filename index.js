@@ -46,7 +46,6 @@ io.on('connection', (socket) => {
     socket.on('user-model', (data) => {
       currRoom = [...socket.rooms][1];
       users[currRoom] = {...users[currRoom], [socket.id]: data};
-      socket.broadcast.to(currRoom).emit('user-model', { id: socket.id, data: data });
     });
     
     socket.on('get-all-users', () => {
