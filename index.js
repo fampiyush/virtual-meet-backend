@@ -21,14 +21,12 @@ const rooms = io.sockets.adapter.rooms;
 
 io.on('connection', (socket) => {
   let currRoom;
-    console.log('a user connected with id:', socket.id);
     socket.on('join', (room) => {
       const roomValues = [...rooms].map(([roo]) => roo);
       if(room){
         if(roomValues.includes(room)){
           socket.join(room);
           socket.emit('joined-room', room)
-          console.log(socket.id, 'joined room:', room)
         }else {
           socket.emit('joined-room', false)
         }
@@ -56,7 +54,6 @@ io.on('connection', (socket) => {
     });
     
     socket.on('disconnect', () => {
-      console.log('a user disconnected with id:', socket.id);
       if (currRoom && users[currRoom] && users[currRoom][socket.id]) {
         const data = users[currRoom][socket.id];
         socket.broadcast.to(currRoom).emit('user-disconnected', {socketId: socket.id, peerId: data['peerId']});
@@ -64,6 +61,7 @@ io.on('connection', (socket) => {
       }
       if (currRoom && users[currRoom] && Object.keys(users[currRoom]).length === 0) {
         delete users[currRoom]
+        console.log('deleted room:', currRoom)
       }
     });
 });
@@ -75,7 +73,7 @@ server.listen(port, () => {
 const generateId = () => {
    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
    let randomCode = '';
-   for (let i = 0; i < 8; i++) {
+   for (let i = 0; i < 6; i++) {
      randomCode += characters.charAt(Math.floor(Math.random() * characters.length));
    }
     return randomCode;
