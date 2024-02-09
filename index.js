@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
 });
 
 const users = {};
+const admins = []
 const rooms = io.sockets.adapter.rooms;
 
 io.on('connection', (socket) => {
@@ -36,6 +37,7 @@ io.on('connection', (socket) => {
           roomId = generateId()
         }
         socket.join(roomId)
+        admins.push(socket.id)
         socket.emit('joined-room', roomId)
         console.log(socket.id, 'created room:', roomId)
       }
@@ -64,6 +66,12 @@ io.on('connection', (socket) => {
         console.log('deleted room:', currRoom)
       }
     });
+
+    socket.on('end-for-all', () => {
+      if(admins.includes(socket.id)){
+        socket.broadcast.to(currRoom).emit('admin-ended-call')
+      }
+    })
 });
 
 server.listen(port, () => {
