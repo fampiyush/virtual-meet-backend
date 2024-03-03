@@ -6,7 +6,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: 'meet.piyushg.com', // change this to the domain you will make the request from
   }
 });
 
